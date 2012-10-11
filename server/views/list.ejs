@@ -13,7 +13,11 @@
   <tr>
     <td><a href="/responses/<%=item._id%>"><%= item.user_id %></a></td>
     <td><%= item.date_time %></td>
-    <td><%= item.expected %></td>
+    <td>
+	<% item.expected.forEach( function(expect) { %>
+      <%= expect.name %></td>
+   <% }); %>
+   </td>
   </tr>
  <% }); %>
 </tbody>
