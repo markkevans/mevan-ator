@@ -12,6 +12,7 @@ run = function(client) {
 
   app.use(function(err, req, res, next){
     res.render('error.ejs', { err: err });
+    res.send(500, 'Internal Server Error');
   });
   
   var requests = new mongodb.Collection(client, 'requests');
@@ -35,7 +36,7 @@ run = function(client) {
     var response = { name: req.body.name, status: req.body.status, user_id: req.body.user_id, date_time: new Date()};
     responses.insert( response, { safe: true }, function(err,objects) {
       if ( err ) { throw new Error(err); }
-      res.redirect("/");
+      res.send(201, 'Created');
     });
   });
 
