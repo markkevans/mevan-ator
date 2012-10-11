@@ -35,7 +35,7 @@ if ( process.env.VCAP_SERVICES ) {
   var service_type = "mongodb-1.8";
   var json = JSON.parse(process.env.VCAP_SERVICES);
   var credentials = json[service_type][0]["credentials"];
-  var server = new mongodb.Server( credentials["host"], credentials["port"]);
+  var server = new mongodb.Server( credentials["host"], credentials["port"], {safe:false});
   new mongodb.Db( credentials["db"], server, {} ).open( function(err,client) {
     client.authenticate( credentials["username"], credentials["password"], function(err,replies) { 
       run(client);
