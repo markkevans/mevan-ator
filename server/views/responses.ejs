@@ -4,7 +4,8 @@
 <thead>
   <tr>
     <th>Name</th>
-    <th>Time</th>
+    <th>Date</th>
+    <th>Response Time</th>
     <th>Status</th>
   </tr>
  </thead>
@@ -12,9 +13,9 @@
  <% responses.forEach( function(item) { %>
   <tr>
     <td><%= item.name %></a></td>
-    <td><%= item.status %></td>
-    <td><%= item.respone_time %></td>
     <td><%= item.date_time %></td>
+    <td><%= item.response_time %></td>
+    <td><%= item.status %></td>
   </tr>
  <% }); %>
 </tbody>
