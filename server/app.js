@@ -33,7 +33,7 @@ run = function(client) {
   });
 
   app.post('/responses',function(req,res){
-    var response = { name: req.body.name, status: req.body.status, user_id: req.body.user_id, date_time: new Date()};
+    var response = { name: req.body.name, status: req.body.status, user_id: req.body.user_id, response_time: req.body.response_time, date_time: new Date()};
     responses.insert( response, { safe: true }, function(err,objects) {
       if ( err ) { throw new Error(err); }
       res.send(201, 'Created');
