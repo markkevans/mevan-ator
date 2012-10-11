@@ -1,10 +1,7 @@
-
-if(process.env.VCAP_SERVICES){
-    var env = JSON.parse(process.env.VCAP_SERVICES);
-    var mongo = env['mongodb-1.8'][0]['credentials'];
-}
-else{
-    var mongo = {
+var app = require('express').createServer();
+var mongo;
+app.configure('development', function(){
+    mongo = {
         "hostname":"localhost",
         "port":27017,
         "username":"",
@@ -12,15 +9,18 @@ else{
         "name":"",
         "db":"db"
     }
-}
+});
+app.configure('production', function(){
+    var env = JSON.parse(process.env.VCAP_SERVICES);
+    mongo = env['mongodb-1.8'][0]['credentials'];
+});
 var generate_mongo_url = function(obj){
     obj.hostname = (obj.hostname || 'localhost');
     obj.port = (obj.port || 27017);
     obj.db = (obj.db || 'test');
     if(obj.username && obj.password){
         return "mongodb://" + obj.username + ":" + obj.password + "@" + obj.hostname + ":" + obj.port + "/" + obj.db;
-    }
-    else{
+    }else{
         return "mongodb://" + obj.hostname + ":" + obj.port + "/" + obj.db;
     }
 }
@@ -43,33 +43,7 @@ var save_data = function(req, res){
     });
 }
 
-var fetch_data = function(req, res){
-    /* Connect to the DB and auth */
-    require('mongodb').connect(mongourl, function(err, conn){
-        conn.collection('ips', function(err, coll){
-            coll.find({}, {limit:10, sort:[['_id','desc']]}, function(err, cursor){
-                cursor.toArray(function(err, items){
-                    res.writeHead(200, {'Content-Type': 'text/plain'});
-                    for(i=0; i<items.length;i++){
-                        res.write(JSON.stringify(items[i]) + "\n");
-                    }
-                    res.end();
-                });
-            });
-        });
-    });
-}
-
-var port = (process.env.VMC_APP_PORT || 3000);
-var host = (process.env.VCAP_APP_HOST || 'localhost');
-var http = require('http');
-
-http.createServer(function (req, res) {
-    params = require('url').parse(req.url);
-    if(params.pathname === '/fetch_data') {
-        fetch_data(req, res);
-    }
-    else{
-        save_data(req, res);
-    }
-}).listen(port, host);
+app.get('/', function (req, res) {
+  res.send('API is running');
+});
+app.listen(process.env.VCAP_APP_PORT || 3000);
