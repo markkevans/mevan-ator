@@ -1,4 +1,7 @@
-var app = require('express').createServer();
+
+var express = require("express");
+var app = express();
+
 var mongo;
 app.configure('development', function(){
     mongo = {
