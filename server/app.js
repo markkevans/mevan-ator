@@ -49,8 +49,9 @@ run = function(client) {
 
   app.get('/responses/:id',function(req,res){
     var id = req.params.id;
-    responses.findOne( { user_id: id }, function(err,doc) {
+    responses.findAll( { user_id: id }, function(err,doc) {
       if ( err ) { throw new Error(err); }
+      cons
       res.render('responses.ejs', { responses: doc } );
     });
   });
