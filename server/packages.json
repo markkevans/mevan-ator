@@ -1,0 +1,10 @@
+{
+  "name": "mevan-ator",
+  "description": "Mevan-ator App",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "express": "3.x",
+    "mongodb": "1.1.11"
+  }
+}
