@@ -23,9 +23,8 @@ run = function(client) {
   });
 
   app.post('/requests',function(req,res){
-
-
-    var request = { user_id: req.body.data.user_id, expected: req.body.data.expected, date_time: new Date()};
+    var data = JSON.parse(req.body.data);
+    var request = { user_id: data.user_id, expected: data.expected, date_time: new Date()};
     requests.insert( request, { safe: true }, function(err,objects) {
       if ( err ) { throw new Error(err); }
       res.send(201, 'Created');
