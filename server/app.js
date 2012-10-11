@@ -50,7 +50,7 @@ run = function(client) {
 
   app.get('/responses/:id',function(req,res){
     var id = new client.bson_serializer.ObjectID(req.params.id);
-    responses.findOne( { _id: id }, function(err,doc) {
+    responses.findOne( { user_id: id }, function(err,doc) {
       if ( err ) { throw new Error(err); }
       res.render('responses.ejs', { responses: doc } );
     });
