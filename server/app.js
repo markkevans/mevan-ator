@@ -25,10 +25,10 @@ run = function(client) {
   app.post('/requests',function(req,res){
 
 
-    var request = { user_id: req.body.user_id, expected: req.body.expected, date_time: new Date()};
+    var request = { user_id: req.body.data.user_id, expected: req.body.data.expected, date_time: new Date()};
     requests.insert( request, { safe: true }, function(err,objects) {
       if ( err ) { throw new Error(err); }
-      res.redirect("/");
+      res.send(201, 'Created');
     });
   });
 
