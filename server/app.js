@@ -23,8 +23,7 @@ run = function(client) {
   });
 
   app.post('/requests',function(req,res){
-    expected = req.body.expected.replace(/(^\s*)|(\s*$)/g,'').replace(/\s{2,}/g,' ').split(' ');
-    var request = { user_id: req.body.name, expected: expected, date_time: new Date()};
+    var request = { user_id: req.body.name, expected: req.body.expected, date_time: new Date()};
     requests.insert( request, { safe: true }, function(err,objects) {
       if ( err ) { throw new Error(err); }
       res.redirect("/");
