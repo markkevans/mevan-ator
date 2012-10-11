@@ -3,8 +3,10 @@ var mongodb = require('mongodb');
 
 run = function(client) {
   var app = express();
+
+  app.engine('.ejs', require('ejs').__express);
   
-  app.register( '.ejs', require('ejs') );
+  //app.register( '.ejs', require('ejs') );
   app.use( express.static(__dirname + '/public') );
   app.use( express.bodyParser() );
   app.use( express.cookieParser() );
@@ -15,14 +17,15 @@ run = function(client) {
   app.get('/',function(req,res){
       res.header('Cache-Control','private');
       res.render('index.ejs');
-    });
   });
 
-  app.error(function(err,req,res,next){
-    res.render('error.ejs', { err: err });
-  });
 
-  var port = process.env.VCAP_APP_PORT || process.env.PORT || 443;
+//  app.error(function(err,req,res,next){
+  //  res.render('error.ejs', { err: err });
+ // });
+
+  //var port = process.env.VCAP_APP_PORT || process.env.PORT || 443;
+  var port = 443;
   app.listen(port);
   console.log('Server listing on port '+ port);
 
