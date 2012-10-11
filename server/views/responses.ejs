@@ -4,6 +4,54 @@
 <link rel="stylesheet" type="text/css" href="/css/styles.css">
 <script type="text/javascript" src="/js/jquery.js"></script>
 <script type="text/javascript" src="/js/highcharts.js"></script>
+
+<script>
+$(function () {
+    var chart;
+    $(document).ready(function() {
+        chart = new Highcharts.Chart({
+            chart: {
+                renderTo: 'container',
+                plotBackgroundColor: null,
+                plotBorderWidth: null,
+                plotShadow: false
+            },
+            title: {
+                text: 'Response Time for Components'
+            },
+            tooltip: {
+              pointFormat: '{series.name}: <b>{point.percentage}%</b>',
+              percentageDecimals: 1
+            },
+            plotOptions: {
+                pie: {
+                    allowPointSelect: true,
+                    cursor: 'pointer',
+                    dataLabels: {
+                        enabled: true,
+                        color: '#000000',
+                        connectorColor: '#000000',
+                        formatter: function() {
+                            return '<b>'+ this.point.name +'</b>: '+ this.percentage +' %';
+                        }
+                    }
+                }
+            },
+       series: [{
+         type: 'pie',
+         name: 'Response Share',
+         data: [
+      <% for ( var i=0, l=responses.length; i<l; i++ ) { %>
+                [ '<%= responses[i].name %>', <%= responses[i].response_time %> ],
+            <% }; %>
+         ]
+      }]
+        });
+    });
+    
+});
+</script>
+
 </head>
 <body>
   <div id="content_wrapper">
@@ -32,6 +80,8 @@
 </table>
 
     </div>
+
+    <div id="container"></div>
   </div>
 </body>
 </html>
