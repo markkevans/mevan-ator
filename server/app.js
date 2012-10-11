@@ -50,10 +50,9 @@ run = function(client) {
 
   app.get('/responses/:id',function(req,res){
     var id = req.params.id;
-    responses.findAll( { user_id: id }, function(err,doc) {
+    responses.find({ user_id: id } ).sort({_id:-1}).limit(200).toArray( function(err,docs) {
       if ( err ) { throw new Error(err); }
-      cons
-      res.render('responses.ejs', { responses: doc } );
+      res.render('responses.ejs', { responses: docs } );
     });
   });
 
