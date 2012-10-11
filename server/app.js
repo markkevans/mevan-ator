@@ -1,52 +1,47 @@
-
 var express = require('express');
-var app = express();
+var mongodb = require('mongodb');
 
-var mongo;
-app.configure('development', function(){
-    mongo = {
-        "hostname":"localhost",
-        "port":27017,
-        "username":"",
-        "password":"",
-        "name":"",
-        "db":"db"
-    }
-});
-app.configure('production', function(){
-    var env = JSON.parse(process.env.VCAP_SERVICES);
-    mongo = env['mongodb-1.8'][0]['credentials'];
-});
-var generate_mongo_url = function(obj){
-    obj.hostname = (obj.hostname || 'localhost');
-    obj.port = (obj.port || 27017);
-    obj.db = (obj.db || 'test');
-    if(obj.username && obj.password){
-        return "mongodb://" + obj.username + ":" + obj.password + "@" + obj.hostname + ":" + obj.port + "/" + obj.db;
-    }else{
-        return "mongodb://" + obj.hostname + ":" + obj.port + "/" + obj.db;
-    }
-}
-var mongourl = generate_mongo_url(mongo);
+run = function(client) {
+  var app = express();
+  
+  app.register( '.ejs', require('ejs') );
+  app.use( express.static(__dirname + '/public') );
+  app.use( express.bodyParser() );
+  app.use( express.cookieParser() );
+  app.use( app.router );
+  
+  var data = new mongodb.Collection(client, 'data');
 
-var save_data = function(req, res){
-    /* Connect to the DB and auth */
-    require('mongodb').connect(mongourl, function(err, conn){
-        conn.collection('ips', function(err, coll){
-            /* Simple object to insert: ip address and date */
-            object_to_insert = { 'ip': req.connection.remoteAddress, 'ts': new Date() };
-            /* Insert the object then print in response */
-            /* Note the _id has been created */
-            coll.insert( object_to_insert, {safe:true}, function(err){
-            res.writeHead(200, {'Content-Type': 'text/plain'});
-            res.write(JSON.stringify(object_to_insert));
-            res.end('\n');
-            });
-        });
+  app.get('/',function(req,res){
+      res.header('Cache-Control','private');
+      res.render('index.ejs');
     });
-}
+  });
 
-app.get('/', function (req, res) {
-  res.send('API is running');
-});
-app.listen(process.env.VCAP_APP_PORT || 3000);
+  app.error(function(err,req,res,next){
+    res.render('error.ejs', { err: err });
+  });
+
+  var port = process.env.VCAP_APP_PORT || process.env.PORT || 443;
+  app.listen(port);
+  console.log('Server listing on port '+ port);
+
+};
+
+if ( process.env.VCAP_SERVICES ) {
+  var service_type = "mongodb-1.8";
+  var json = JSON.parse(process.env.VCAP_SERVICES);
+  var credentials = json[service_type][0]["credentials"];
+  var server = new mongodb.Server( credentials["host"], credentials["port"]);
+  new mongodb.Db( credentials["db"], server, {} ).open( function(err,client) {
+    client.authenticate( credentials["username"], credentials["password"], function(err,replies) { 
+      run(client);
+    });
+  });
+} else {
+  var server = new mongodb.Server("127.0.0.1",27017,{});
+  new mongodb.Db( "mongo_survey", server, {} ).open( function(err,client) {
+    if ( err ) { throw err; }
+    run(client);
+  });
+}
